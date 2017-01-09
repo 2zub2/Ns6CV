@@ -1,5 +1,8 @@
+#pragma once
+
 #include "stdafx.h"
 #include <opencv2\opencv.hpp>
+
 
 using namespace cv;
 
@@ -9,6 +12,7 @@ public:
 	String fileName;
 
 	Mat image;
+	Mat pattern;
 
 	int removeLightMethod = 0;
 
@@ -30,9 +34,17 @@ public:
 		return 0;
 	}
 
+	int viewImage()
+	{
+		namedWindow("Display window", WINDOW_AUTOSIZE);
+		imshow("Display window", image);
+
+		return 0;
+	}
+
 	int proccedImage(bool saveStep = false, String itr = "")
 	{
-		if (image.empty())
+		/*if (image.empty())
 		{
 			return -1;
 		}
@@ -43,28 +55,36 @@ public:
 		Mat img = this->removeLight(image, pattern, this->removeLightMethod);
 		if (saveStep) this->saveFile(img, "_2_remove_light" + itr);
 
-		/*Mat img_thr = this->calculateThreshold(
+		Mat img_thr = this->calculateThreshold(
 			img, 
 			this->thresholdThresh, 
 			this->thresholdMaxval, 
 			this->thresholdMethod
 		);
-		if (saveStep) this->saveFile(img_thr, "_3_threshold");*/
+		if (saveStep) this->saveFile(img_thr, "_3_threshold");
 
 		Mat img_thr = img;
 
 		Mat img_ers = this->removeErosion(img_thr, this->erosionSize);
 		if (saveStep) this->saveFile(img_ers, "_4_erosion" + itr);
-
+		*/
 		return 0;
 	}
 
-	int saveImage()
+	int saveImage(String postfix)
 	{
-		return this->saveFile(this->image, "_result");
+		return saveFile(image, "_" + postfix);
 	}
 
-protected:
+	String StringFromCString(CString str)
+	{
+		CT2CA pszConvertedAnsiString(str);
+		std::string strStd(pszConvertedAnsiString);
+
+		return String(strStd);
+	}
+
+
 	int saveFile(Mat img, String postfix)
 	{
 		if (img.empty())
@@ -77,21 +97,19 @@ protected:
 		return 0;
 	}
 
-	Mat calculateLightPattern(Mat img)
+	void calculateLightPattern()
 	{
-		Mat pattern;
-		blur(img, pattern, Size(img.cols / 3, img.cols / 3));
-		return pattern;
+		blur(image, pattern, Size(image.cols / 3, image.cols / 3));
 	}
 
-	Mat removeLight(Mat img, Mat pattern, int method)
+	void removeLight(int method)
 	{
 		Mat aux;
 
 		if (method == 1)
 		{
 			Mat img32, pattern32;
-			img.convertTo(img32, CV_32F);
+			image.convertTo(img32, CV_32F);
 			pattern.convertTo(pattern32, CV_32F);
 			aux = 1 - (img32 / pattern32);
 			aux = aux * 255;
@@ -99,29 +117,29 @@ protected:
 		}
 		else
 		{
-			aux = pattern - img;
+			aux = pattern - image;
 		}
 
-		return aux;
+		image = aux;
 	}
 
-	Mat calculateThreshold(Mat img, double thresh, double maxval, int method)
+	void calculateThreshold(double thresh, double maxval, int method)
 	{
 		Mat thr;
 
 		if (method == 2)
 		{
-			threshold(img, thr, thresh, maxval, THRESH_BINARY_INV); 
+			threshold(image, thr, thresh, maxval, THRESH_BINARY_INV); 
 		}
 		else
 		{
-			threshold(img, thr, thresh, maxval, THRESH_BINARY);
+			threshold(image, thr, thresh, maxval, THRESH_BINARY);
 		}
 
-		return thr;
+		image = thr;
 	}
 
-	Mat removeErosion(Mat img, int erosion_size)
+	void removeErosion(int erosion_size)
 	{
 		Mat erd;
 		Mat erode_element = getStructuringElement(
@@ -130,9 +148,9 @@ protected:
 			Point(erosion_size, erosion_size)
 		);
 
-		erode(img, erd, erode_element);
-		dilate(erd, erd, erode_element);
+		erode(image, erd, erode_element);
+		//dilate(erd, erd, erode_element);
 
-		return erd;
+		image = erd;
 	}
 };

@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B28A23B3-3A12-436D-81C1-FFAB29AB0E39}</ProjectGuid>
     <RootNamespace>Ns6CV</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -192,6 +192,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CV.h" />
     <ClInclude Include="Ns6CV.h" />
     <ClInclude Include="Ns6CVDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -213,6 +214,7 @@
     <ResourceCompile Include="Ns6CV.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="res\Ns6CV.rc2" />
   </ItemGroup>
   <ItemGroup>
