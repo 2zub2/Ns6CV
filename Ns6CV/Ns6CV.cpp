@@ -6,6 +6,9 @@
 #include "Ns6CV.h"
 #include "Ns6CVDlg.h"
 
+#include "opencv2/core.hpp"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif

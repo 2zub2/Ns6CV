@@ -30,4 +30,8 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	CString edtFileName;
+	afx_msg void OnBnClickedButtonOpenImage();
+	afx_msg void OnBnClickedButtonGo();
 };
