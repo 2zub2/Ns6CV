@@ -7,6 +7,8 @@
 #include "Ns6CVDlg.h"
 #include "afxdialogex.h"
 #include "CV.cpp"
+#include "settingsTV.h"
+#include <Pathcch.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -120,6 +122,8 @@ void CNs6CVDlg::OnBnClickedButtonOpenImage()
 	if (dlg.DoModal() == IDOK)
 	{
 		edtFileName = dlg.GetFileTitle();
+		edtFileName.GetS
+		PathCchRemoveFileSpec(&(), NULL);
 		UpdateData(FALSE);
 		img.fileName = img.StringFromCString(edtFileName);
 	}
@@ -201,6 +205,45 @@ void CNs6CVDlg::OnBnClickedButtonTreshold()
 void CNs6CVDlg::OnBnClickedButtonErosion()
 {
 	UpdateData(TRUE);
+	
+	SCL::settingsTV sclSettings;
 
-	img.removeErosion(edtErosionSize);
+	SCL::setting_initializer pgmInitialSettings[] =
+	{
+		{ "", ".SettingsVersion"  , ST_STR, "1.00.01", "Settings Version" },
+		{ "", "ParmGlobalUI16"    , ST_UI16, "3"              , "" },
+		{ "Section1","ParmBOOL"   , ST_BOOL, "FALSE"          , "" },
+		{ "Section2","ParmUINT08" , ST_UI8 , "255"            , "" },
+		{ "Section2","ParmUINT16" , ST_UI16, "65535"          , "" },
+		{ "Section2","ParmUINT32" , ST_UI32, "4294967295abcd" , "" },
+		{ "Section2","ParmUINT64" , ST_UI64, "42949672959999" , "" },
+		{ "Section3","ParmINT08N" , ST_I8  , "-128"           , "" },
+		{ "Section3","ParmINT08P" , ST_I8  ,  "127"           , "" },
+		{ "Section3","ParmINT16N" , ST_I16 , "-32768"         , "" },
+		{ "Section3","ParmINT16P" , ST_I16 ,  "32767"         , "" },
+		{ "Section3","ParmINT32P" , ST_I32 , "2147483647"     , "" },
+		{ "Section3","ParmINT32N" , ST_I32 , "-2147483648"    , "is an int32" },
+		{ "Section3","ParmINT64P" , ST_I64 , "42949672959999" , "" },
+		{ "Section3","ParmINT64N" , ST_I64 , "-42949672959999", "" },
+		{ "Section4","ParmDBLE64" , ST_DBL , "5.1234567890123456", "" },
+		{ "Section5","ParmSTRING" , ST_STR , "some string", "string type" },
+		{ "Se\xe0\xb4\x95tion"    ,"ParmUTF8\xe0\xb4\x87STR", ST_STR , "some\xe3\x97\x94str\xe0\xb4\x86ng", "UTF-8 encoded strings" },
+	};
+
+	uint32_t numSettings =
+		sizeof(pgmInitialSettings) / sizeof(SCL::setting_initializer);
+
+	uint32_t rc = sclSettings.init(numSettings, pgmInitialSettings);
+
+	string filename = "settings.txt";
+
+	SCL::SettingsExportErrType erc =
+		sclSettings.saveSettingsToFile(filename, true); // over-write
+	if (erc = SCL::SERC_SUCCESS)
+	{
+		MessageBox(L"ошибка загрузки файла", L"ошибка", MB_OK);
+	}
+
+	
+	//img.removeErosion(edtErosionSize);
 }

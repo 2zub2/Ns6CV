@@ -192,10 +192,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CV.h" />
     <ClInclude Include="Ns6CV.h" />
     <ClInclude Include="Ns6CVDlg.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="settingsTV.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -203,6 +203,7 @@
     <ClCompile Include="CV.cpp" />
     <ClCompile Include="Ns6CV.cpp" />
     <ClCompile Include="Ns6CVDlg.cpp" />
+    <ClCompile Include="settingsTV.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

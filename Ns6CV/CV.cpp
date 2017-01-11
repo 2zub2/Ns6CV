@@ -3,13 +3,13 @@
 #include "stdafx.h"
 #include <opencv2\opencv.hpp>
 
-
 using namespace cv;
 
 class CV
 {
 public:
 	String fileName;
+	String dirName;
 
 	Mat image;
 	Mat pattern;
@@ -21,6 +21,12 @@ public:
 	int thresholdMethod = 0;
 
 	int erosionSize = 4;
+
+	void setFileName(String dir, String filename)
+	{
+		dirName = dir;
+		fileName = filename;
+	}
 
 	int readImage()
 	{
@@ -148,7 +154,7 @@ public:
 			Point(erosion_size, erosion_size)
 		);
 
-		erode(image, erd, erode_element);
+		erode(image, erd, Mat());
 		//dilate(erd, erd, erode_element);
 
 		image = erd;
