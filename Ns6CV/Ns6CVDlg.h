@@ -33,20 +33,18 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CString edtFileName;
+	CString edtSaveFileName;
 
 	afx_msg void OnBnClickedButtonOpenImage();
 	afx_msg void OnBnClickedButtonGo();
-	CV img;
+	CV workImage;
 	afx_msg void OnBnClickedButtonLoadImage();
 	afx_msg void OnBnClickedButtonView();
-	CString edtSaveFileName;
+	
 	afx_msg void OnBnClickedButtonSave();
-	int edtRemoveLightMethod;
 	afx_msg void OnBnClickedButton3();
-	double edtTresh;
-	double edtMaxval;
-	int edtTresholdMethod;
 	afx_msg void OnBnClickedButtonTreshold();
-	int edtErosionSize;
 	afx_msg void OnBnClickedButtonErosion();
+	afx_msg void OnBnClickedButtonOpenProperty();
+	CString edtOptionFileName;
 };

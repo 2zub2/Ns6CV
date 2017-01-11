@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <opencv2\opencv.hpp>
+#include "settingsTV.h"
 
 using namespace cv;
 
@@ -9,12 +10,19 @@ class CV
 {
 public:
 	String fileName;
-	String dirName;
+	String fileDir;
+	String fileExt;
+
+	String settingFileName;
+
+	String savePostfix;
 
 	Mat image;
 	Mat pattern;
 
-	int removeLightMethod = 0;
+	bool removeLightActive = true;
+	bool removeLightSave = false;
+	char removeLightMethod = 0;
 
 	double thresholdThresh = 20;
 	double thresholdMaxval = 255;
@@ -22,15 +30,76 @@ public:
 
 	int erosionSize = 4;
 
-	void setFileName(String dir, String filename)
+
+
+	void setFileName(String file)
 	{
-		dirName = dir;
-		fileName = filename;
+		fileDir = file.substr(0, file.find_last_of('\\'));
+		fileName = file.substr(file.find_last_of('\\'), file.length());
+		fileName = fileName.substr(0, fileName.length() - 4);
+		fileExt = file.substr(file.find_last_of('.'), file.length());
 	}
+
+
+
+	int readSettings(String settingFileName)
+	{
+		SCL::settingsTV sclSettings;
+		bool fileSettingVersionDifferent = false;
+		string importErrStr;
+		SCL::SettingsImportType importType = SCL::IMPORT_ALL;
+		SCL::SettingsImportErrType irc = sclSettings.importSettingsFromFile(
+			settingFileName,
+			importType,
+			fileSettingVersionDifferent,
+			importErrStr,
+			NULL
+		);
+		if (irc != SCL::SIRC_SUCCESS)
+		{
+			return -1;
+		}
+		
+		sclSettings.getBoolSetting("LightPatten", "active",);
+
+		return 0;
+	}
+
+
+
+	int prepareSettingsTemplate()
+	{
+		SCL::setting_initializer pgmInitialSettings[] =
+		{
+			{ "LightPattern",	"active",	ST_BOOL,	"TRUE",		"удалить свет по шаблону"	},
+			{ "LightPattern",	"save",		ST_BOOL,	"FALSE",	"удалить свет по шаблону"	},
+			{ "LightPattern",	"method",	ST_UI8,		"0",		"метод удаления (1 или 2)"	},
+		};
+
+		uint32_t numSettings =
+			sizeof(pgmInitialSettings) / sizeof(SCL::setting_initializer);
+
+		SCL::settingsTV sclSettings;
+		uint32_t rc = sclSettings.init(numSettings, pgmInitialSettings);
+
+		if (rc != 0) 
+		{
+			return -1;
+		}
+
+		SCL::SettingsExportErrType erc = sclSettings.saveSettingsToFile("template.cfg", true);
+		if (erc != SCL::SERC_SUCCESS)
+		{
+			return -1;
+		}
+
+		return 0;
+	}
+	
 
 	int readImage()
 	{
-		image = imread(fileName + ".jpg", IMREAD_GRAYSCALE);
+		image = imread(fileDir + fileName + fileExt, IMREAD_GRAYSCALE);
 
 		if (image.empty())
 		{
@@ -43,65 +112,37 @@ public:
 	int viewImage()
 	{
 		namedWindow("Display window", WINDOW_AUTOSIZE);
+
+		if (image.empty())
+		{
+			return -1;
+		}
+
 		imshow("Display window", image);
 
 		return 0;
 	}
 
+	int saveImage()
+	{
+		if (image.empty())
+		{
+			return -1;
+		}
+
+		imwrite(fileDir + fileName + '_' + savePostfix + fileExt, image);
+
+		return 0;
+	}
+
+
 	int proccedImage(bool saveStep = false, String itr = "")
 	{
-		/*if (image.empty())
-		{
-			return -1;
-		}
-
-		Mat pattern = this->calculateLightPattern(image);
-		if (saveStep) this->saveFile(pattern, "_1_pattern" + itr);
-
-		Mat img = this->removeLight(image, pattern, this->removeLightMethod);
-		if (saveStep) this->saveFile(img, "_2_remove_light" + itr);
-
-		Mat img_thr = this->calculateThreshold(
-			img, 
-			this->thresholdThresh, 
-			this->thresholdMaxval, 
-			this->thresholdMethod
-		);
-		if (saveStep) this->saveFile(img_thr, "_3_threshold");
-
-		Mat img_thr = img;
-
-		Mat img_ers = this->removeErosion(img_thr, this->erosionSize);
-		if (saveStep) this->saveFile(img_ers, "_4_erosion" + itr);
-		*/
-		return 0;
-	}
-
-	int saveImage(String postfix)
-	{
-		return saveFile(image, "_" + postfix);
-	}
-
-	String StringFromCString(CString str)
-	{
-		CT2CA pszConvertedAnsiString(str);
-		std::string strStd(pszConvertedAnsiString);
-
-		return String(strStd);
-	}
-
-
-	int saveFile(Mat img, String postfix)
-	{
-		if (img.empty())
-		{
-			return -1;
-		}
-
-		imwrite(this->fileName + postfix + ".jpg", img);
 
 		return 0;
 	}
+
+protected:
 
 	void calculateLightPattern()
 	{
