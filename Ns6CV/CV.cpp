@@ -18,7 +18,7 @@ public:
 
 	Mat image;
 
-	SCL::settingsTV sclSettings;
+	SCL::settingsTV sclSettings;1
 
 	// remove light
 	unsigned char	removeLightActive = 1;
